@@ -37,6 +37,9 @@ static const wchar_t *opt_ptr = L"";
 
 /* Python command line short and long options */
 
+/* options that require arguments (marked with : in SHORT_OPTS).
+    use "./python -h" to see the list of options
+*/
 #define SHORT_OPTS L"bBc:dEhiIJm:OPqRsStuvVW:xX:?"
 
 static const _PyOS_LongOption longopts[] = {
@@ -57,6 +60,14 @@ void _PyOS_ResetGetOpt(void)
     opt_ptr = L"";
 }
 
+
+/*
+Main Function: _PyOS_GetOpt
+This is the core function that parses command-line options. It takes:
+argc: Number of command-line arguments.
+argv: Array of wide-character strings containing the arguments.
+longindex: Pointer to store the index of matched long options.
+*/
 int _PyOS_GetOpt(Py_ssize_t argc, wchar_t * const *argv, int *longindex)
 {
     wchar_t *ptr;
