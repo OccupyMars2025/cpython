@@ -2692,6 +2692,7 @@ config_parse_cmdline(PyConfig *config, PyWideStringList *warnoptions,
             break;
         }
 
+        // Duplicates the module name and stores it in config->run_module
         if (c == 'm') {
             /* -m is the last option; following arguments
                that look like options are left for the
@@ -2707,8 +2708,17 @@ config_parse_cmdline(PyConfig *config, PyWideStringList *warnoptions,
 
         switch (c) {
         // Integers represent long options, see Python/getopt.c
+        /*
+        static const _PyOS_LongOption longopts[] = {
+        name, has_arg, val (used in switch in initconfig.c)
+        {L"check-hash-based-pycs", 1, 0},
+        {L"help-all", 0, 1},
+        {L"help-env", 0, 2},
+        {L"help-xoptions", 0, 3},
+        {NULL, 0, -1},
+        */
         case 0:
-            // check-hash-based-pycs
+            // check-hash-based-pycs, it has an argument
             if (wcscmp(_PyOS_optarg, L"always") == 0
                 || wcscmp(_PyOS_optarg, L"never") == 0
                 || wcscmp(_PyOS_optarg, L"default") == 0)
