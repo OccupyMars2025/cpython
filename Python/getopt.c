@@ -31,8 +31,11 @@
 
 int _PyOS_opterr = 1;                 /* generate error messages */
 Py_ssize_t _PyOS_optind = 1;          /* index into argv array   */
-const wchar_t *_PyOS_optarg = NULL;   /* optional argument       */
+const wchar_t *_PyOS_optarg = NULL;   /* optional argument, e.g., in "-m module", _PyOS_optarg points to "module"      */
 
+
+/* Pointer to the current option character in the current argument,
+e.g. if argv[_PyOS_optind] is "-ab", opt_ptr can point to "b". */
 static const wchar_t *opt_ptr = L"";
 
 /* Python command line short and long options */
@@ -111,6 +114,7 @@ int _PyOS_GetOpt(Py_ssize_t argc, wchar_t * const *argv, int *longindex)
 
     if (option == L'-') {
         // Parse long option.
+        // just "--"
         if (*opt_ptr == L'\0') {
             if (_PyOS_opterr) {
                 fprintf(stderr, "Expected long option\n");
@@ -133,6 +137,7 @@ int _PyOS_GetOpt(Py_ssize_t argc, wchar_t * const *argv, int *longindex)
         if (!opt->has_arg) {
             return opt->val;
         }
+        // If the option requires an argument but none is available
         if (_PyOS_optind >= argc) {
             if (_PyOS_opterr) {
                 fprintf(stderr, "Argument expected for the %ls options\n",
@@ -159,11 +164,15 @@ int _PyOS_GetOpt(Py_ssize_t argc, wchar_t * const *argv, int *longindex)
     }
 
     if (*(ptr + 1) == L':') {
+        /*
+        If the argument is attached (e.g., -ofile), stores it and resets opt_ptr.
+        _PyOS_optarg will point to "file".
+        */
         if (*opt_ptr != L'\0') {
             _PyOS_optarg  = opt_ptr;
             opt_ptr = L"";
         }
-
+        // If the argument is separate, checks if it exists, stores it, and increments _PyOS_optind.
         else {
             if (_PyOS_optind >= argc) {
                 if (_PyOS_opterr) {

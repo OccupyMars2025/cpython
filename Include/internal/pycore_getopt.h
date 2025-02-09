@@ -16,6 +16,10 @@ extern void _PyOS_ResetGetOpt(void);
 name: The option name (e.g., --help-all).
 has_arg: Whether the option takes an argument (1 for yes, 0 for no).
 val: A value returned when the option is matched.
+
+        if (!opt->has_arg) {
+            return opt->val;
+        }
 */
 typedef struct {
     const wchar_t *name;
